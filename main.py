@@ -3,6 +3,7 @@ from NFA import createNFA
 from NFA import printNFAgraph
 from NFA import OutputGraph
 from regex import buildTable
+from regex import isValidInput
 #graph
 node0= {'n':0, 't':'S','p':[], 'c':[(1,'z')]}
 node1= {'n':1, 't':'I','p':[0], 'c':[(2,-1)]}
@@ -55,14 +56,18 @@ table3 = {
         'F':{'operation':2,'oprd1':'B' }
         }
 originalChars3 = ['0','1']
-regex = regex = "0|(1(0+1)*00)"
-x,y,z,table = buildTable(0,0,regex)
-print(table)
-#get table from regex
-
-#create NFA
-graph = createNFA(table,originalChars3)
-#json  of graph
-graph_jason = OutputGraph(graph,originalChars3)
-#sketch the graph
-drawNFA(graph)
+regex = "0|(1(0+1)*00)"
+#check the validity of the input and return its specialchars if it valid , none otherwise
+originalChars = isValidInput(regex)
+if(originalChars is not None):
+    #get table from regex
+    x,y,z,table = buildTable(0,0,regex)
+    superNode = "Node"+str(len(table)-1)
+    #create NFA
+    graph = createNFA(table,originalChars,superNode)
+    #json  of graph
+    graph_jason = OutputGraph(graph,originalChars)
+    #sketch the graph
+    drawNFA(graph)
+else:
+    print("invalid character(s)")

@@ -179,9 +179,10 @@ def example2(graph):
     printNFAgraph(graph)
 
 
-def createNFA(table,originalChars):
+def createNFA(table,originalChars,superNode):
     #create initial graph
-    node0= {'n':0, 't':'S','p':[], 'c':[(1,'Z')]}
+    print(table)
+    node0= {'n':0, 't':'S','p':[], 'c':[(1,superNode)]}
     node1= {'n':1, 't':'I','p':[0], 'c':[(2,-1)]}
     node2= {'n':2, 't':'E','p':[1], 'c':[]}
     graph = []
@@ -245,7 +246,7 @@ originalChars2 = ['a','b']
 
 
 
-graph = createNFA(table2,originalChars2)
+graph = createNFA(table2,originalChars2,'Z')
 printNFAgraph(graph)
 
 def OutputGraph(graph, alphabet):

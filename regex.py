@@ -10,29 +10,6 @@ table = {'Z':{"operation":1,'oprd1':'D', 'oprd2':'E' },
         'C':{'operation':1,'oprd1':'0', 'oprd2':'1' },
         'E':{'operation':0,'oprd1':'0', 'oprd2':'1' }}
 
-#check any invalid character in the input or invalid sequences of characters
-def isValidInput(regex):
-    for i in regex:
-        '''
-        n-make sure en el mawdo3 kolo mortbet bel validation msh b2ny abdel el invalid char
-        n3ml check 3la 7etet el numbers hal hya valid wala la2
-        @TODO yryt nkml ba2yt el validation cases zay maslan el *A,**,*|*,() order and position,etc..
-        '''
-        if(
-            ((ord(i) >= 97 and ord(i) <= 122) or (ord(i) >= 65 and ord(i) <= 90)) or
-            i in ['+','|','*','(',')']
-        ):
-            print(i)
-        else:
-            print("invalid character !!",i)
-            return False
-        print(ord(i))
-    if(re.findall("\*{2,}",regex) or re.findall("\|{2,}",regex) 
-        or re.findall("\|\*+",regex)):
-            print("invalid sequence")
-            return False
-    return True
-
 def checkParantheses(counterCheck,counter,regex):
     if(counter == len(regex)):
         return counterCheck
@@ -44,16 +21,43 @@ def checkParantheses(counterCheck,counter,regex):
         return -1
     return checkParantheses(counterCheck,counter+1,regex)
 
+#check any invalid character in the input or invalid sequences of characters
+def isValidInput(regex):
+    SpecialChars = []
+    for i in regex:
+        '''
+        n-make sure en el mawdo3 kolo mortbet bel validation msh b2ny abdel el invalid char
+        n3ml check 3la 7etet el numbers hal hya valid wala la2
+        @TODO yryt nkml ba2yt el validation cases zay maslan el *A,**,*|*,() order and position,etc..
+        '''
+        if(
+            ((ord(i) >= 97 and ord(i) <= 122) or (ord(i) >= 65 and ord(i) <= 90)) or
+            i in ['+','|','*','(',')'] or (ord(i) >= 48 and ord(i) <= 57)
+        ):
+            SpecialChars.append(i)
+        else:
+            print("invalid character !!",i)
+            return None
+        print(ord(i))
+    if(re.findall("\*{2,}",regex) or re.findall("\|{2,}",regex) 
+        or re.findall("\|\*+",regex)):
+            print("invalid sequence")
+            return None
+    if(checkParantheses(0,0,regex) == 0):
+        return SpecialChars
+    else:
+        return None
+
 def makeRegexDic(regex):
     dicRegex = {'operation':None,'oprd1':None, 'oprd2':-1}
     if('|' in regex or '+' in regex): #regex is oring
         regex = regex.replace('+','|')
         dicRegex['operation'] = 1
-        dicRegex['oprd1'] = regex.split('|')[0][:-1] if "$" in regex.split('|')[0] else regex.split('|')[0]        
+        dicRegex['oprd1'] = regex.split('|')[0]        
         dicRegex['oprd2'] = regex.split('|')[1]
     elif('*' in regex): #in case of repeation "*"
         dicRegex['operation'] = 2
-        dicRegex['oprd1'] = regex.split('*')[0]
+        dicRegex['oprd1'] = regex.split('*')[0][:-1]
     elif(regex.count("$") == 2): #in case of concatenate
         regex = regex[:-1]
         dicRegex['operation'] = 0
@@ -71,6 +75,9 @@ def makeRegexDic(regex):
         dicRegex['operation'] = 3
         dicRegex['oprd1'] = regex
     else: return {} #it means that the regex is empty
+    dicRegex['oprd1'] = dicRegex['oprd1'][:-1] if "$" in dicRegex['oprd1'] else dicRegex['oprd1']
+    if(dicRegex['oprd2'] != -1):
+        dicRegex['oprd2'] = dicRegex['oprd2'][:-1] if "$" in dicRegex['oprd2'] else dicRegex['oprd2'] 
     return dicRegex
 
 
@@ -80,24 +87,22 @@ def buildTable(counter,globalCounter,regex):
     regexNodes = []
     regexSplit = ""
     while(counter < len(regex)):
-        print(counter,' ',len(regex))
+        #print(counter,' ',len(regex))
         if(regex[counter] == ")"):
-            #dic = makeRegexDic(regexSplit)
-            #print(dic)
-            #print("finished")
-            #table1['Node'+str(globalCounter)+"$"] = dic
             if(len(regexNodes) > 1):
                 finalRegex = "".join(regexNodes[0]) + regexSplit + "".join(regexNodes[1])
-                print(finalRegex)
+                #print(finalRegex)
                 dic = makeRegexDic(finalRegex)
                 table1['Node'+str(globalCounter)] = dic
+            #print("global = ",globalCounter)
                 globalCounter += 1
-            print("global = ",globalCounter)
+            if(regexNodes[0][:2] != "No"):
+                globalCounter += 1
             return counter,'Node'+str(globalCounter-1),globalCounter,table1
         elif(regex[counter] == "("):
             counter,newNodeName,globalCounter,table1 = buildTable(counter+1,globalCounter,regex)
             if(len(regexNodes)):
-                print("".join(regexNodes)+regexSplit+newNodeName)
+                #print("".join(regexNodes)+regexSplit+newNodeName)
                 dic = makeRegexDic("".join(regexNodes)+regexSplit+newNodeName)
                 table1['Node'+str(globalCounter)] = dic
                 regexNodes = ['Node'+str(globalCounter)+"$"]
@@ -108,13 +113,10 @@ def buildTable(counter,globalCounter,regex):
         elif(regex[counter] == "*"):
             if(len(regexNodes) > 0):
                 dic = makeRegexDic("".join(regexNodes)+"*")
-                #print(dic)
-                #print("finished")
                 table1['Node'+str(globalCounter)] = dic
-                #print(table1)
-                print(regexNodes)
+                #print(regexNodes)
                 print('Node'+str(globalCounter-1)+"$")
-                regexNodes.remove('Node'+str(globalCounter-1)+"$")
+                regexNodes = []
                 regexNodes.append('Node'+str(globalCounter)+"$")
                 globalCounter += 1
             else:
@@ -125,7 +127,7 @@ def buildTable(counter,globalCounter,regex):
             else:
                 return len(regex),"None",-5,table1
         elif(len(regexNodes)):
-            print("".join(regexNodes)+regexSplit+regex[counter])
+            #print("".join(regexNodes)+regexSplit+regex[counter])
             dic = makeRegexDic("".join(regexNodes)+regexSplit+regex[counter])
             table1['Node'+str(globalCounter)] = dic
             regexNodes = ['Node'+str(globalCounter)+"$"]
@@ -137,23 +139,23 @@ def buildTable(counter,globalCounter,regex):
         counter += 1
     if(len(regexNodes) > 1):
         finalRegex = "".join(regexNodes) + regexSplit
-        print(finalRegex)
+        #print(finalRegex)
         dic = makeRegexDic(finalRegex)
         table1['Node'+str(globalCounter)+"$"] = dic
         globalCounter += 1
-    print("returning",regexNodes)
+    #print("returning",regexNodes)
     return counter,regexNodes[0],globalCounter,table1
 
 regex = "(1+0)*1"
 regex = "(a|b)*abb"
-regex = "(1(1+0)00)|1"
+regex = "0+(1((0+1)*)00)"
 isValidInput(regex)
 
-regex = "(1(1+0)00)|1"
+#regex = "(1)*"
 print(checkParantheses(0,0,regex))
 ret1,ret2,flag,table1 = buildTable(0,0,regex)
-print(flag)
+#print(flag)
 print("printing the table")
-print(table1)
-#print(makeRegexDic("1$Node$"))
-#def buildTable()
+print(len(table1))
+
+#print(makeRegexDic("1$|Node1$"))
