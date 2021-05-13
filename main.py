@@ -56,8 +56,8 @@ table3 = {
         }
 originalChars3 = ['0','1']
 regex = regex = "0|(1(0+1)*00)"
-x,y,z,table = buildTable(buildTable)
-
+x,y,z,table = buildTable(0,0,regex)
+print(table)
 #get table from regex
 
 #create NFA

@@ -95,7 +95,7 @@ def buildTable(counter,globalCounter,regex):
             print("global = ",globalCounter)
             return counter,'Node'+str(globalCounter-1),globalCounter,table1
         elif(regex[counter] == "("):
-            counter,newNodeName,globalCounter = buildTable(counter+1,globalCounter,regex)
+            counter,newNodeName,globalCounter,table1 = buildTable(counter+1,globalCounter,regex)
             if(len(regexNodes)):
                 print("".join(regexNodes)+regexSplit+newNodeName)
                 dic = makeRegexDic("".join(regexNodes)+regexSplit+newNodeName)
