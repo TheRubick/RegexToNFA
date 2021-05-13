@@ -148,7 +148,7 @@ regex = "(a|b)*abb"
 regex = "(1(1+0)00)|1"
 isValidInput(regex)
 
-regex = "(1(*1+0)00)|1"
+regex = "(1(1+0)00)|1"
 print(checkParantheses(0,0,regex))
 ret1,ret2,flag = buildTable(0,0,regex)
 print(flag)
