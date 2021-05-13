@@ -1,3 +1,4 @@
+import json
 #0 for concat, 1 for oring, 2 for repeat
 #((0|1)*+(01))
 #((C)*+(01))
@@ -17,7 +18,7 @@ graph.append(node0)
 graph.append(node1)
 graph.append(node2)
 
-def printNFAgraph (graph):
+def printNFAgraph(graph):
     print("/////////////////////////")
     startingNode = -1
     endingNode = -1
@@ -247,7 +248,32 @@ originalChars2 = ['a','b']
 graph = createNFA(table2,originalChars2)
 printNFAgraph(graph)
 
+def OutputGraph(graph, alphabet):
+    print("/////////////////////////")
+    #endNode = False
+    out = {"startingState":-1}
+    for i in range(len(graph)):
+        if graph[i]['n']!= -1:
+            out[str(graph[i]['n'])] = {"isTerminatingState": False}
+            for ch in alphabet:
+                out[str(graph[i]['n'])][ch] = []
+            out[str(graph[i]['n'])]["epsilon"] = []
+            if graph[i]['t'] == 'S':
+                out["startingState"] = str(graph[i]['n'])
+            elif graph[i]['t'] == 'E':
+                out[str(graph[i]['n'])]["isTerminatingState"] = True
+            for j in range(len(graph[i]['c'])):
+                value = graph[i]['c'][j][1]
+                child = graph[i]['c'][j][0]
+                print(graph[i]['n'],"--->",graph[i]['c'][j][0],"by value = ",graph[i]['c'][j][1])
+                if(value == -1):
+                    out[str(graph[i]['n'])]["epsilon"].append(str(child))
+                else:
+                    out[str(graph[i]['n'])][str(value)].append(str(child))
 
+    print(json.dumps(out, indent=2))
+    return out
+                
     
             
      

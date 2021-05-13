@@ -1,6 +1,7 @@
 from graphviz import Digraph
 from NFA import createNFA
 from NFA import printNFAgraph
+from NFA import OutputGraph
 #graph
 node0= {'n':0, 't':'S','p':[], 'c':[(1,'z')]}
 node1= {'n':1, 't':'I','p':[0], 'c':[(2,-1)]}
@@ -53,7 +54,9 @@ table3 = {
         'F':{'operation':2,'oprd1':'B' }
         }
 originalChars3 = ['0','1']
+#create NFA
 graph = createNFA(table3,originalChars3)
-printNFAgraph(graph)
-
+#json  of graph
+graph_jason = OutputGraph(graph,originalChars3)
+#sketch the graph
 drawNFA(graph)
