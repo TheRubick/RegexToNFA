@@ -2,6 +2,7 @@ from graphviz import Digraph
 from NFA import createNFA
 from NFA import printNFAgraph
 from NFA import OutputGraph
+from regex import buildTable
 #graph
 node0= {'n':0, 't':'S','p':[], 'c':[(1,'z')]}
 node1= {'n':1, 't':'I','p':[0], 'c':[(2,-1)]}
@@ -54,8 +55,13 @@ table3 = {
         'F':{'operation':2,'oprd1':'B' }
         }
 originalChars3 = ['0','1']
+regex = regex = "0|(1(0+1)*00)"
+x,y,z,table = buildTable(buildTable)
+
+#get table from regex
+
 #create NFA
-graph = createNFA(table3,originalChars3)
+graph = createNFA(table,originalChars3)
 #json  of graph
 graph_jason = OutputGraph(graph,originalChars3)
 #sketch the graph

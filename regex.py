@@ -73,8 +73,9 @@ def makeRegexDic(regex):
     else: return {} #it means that the regex is empty
     return dicRegex
 
-table1 = {}
+
 def buildTable(counter,globalCounter,regex):
+    table1 = {}
     dic = {}
     regexNodes = []
     regexSplit = ""
@@ -92,7 +93,7 @@ def buildTable(counter,globalCounter,regex):
                 table1['Node'+str(globalCounter)] = dic
                 globalCounter += 1
             print("global = ",globalCounter)
-            return counter,'Node'+str(globalCounter-1),globalCounter
+            return counter,'Node'+str(globalCounter-1),globalCounter,table1
         elif(regex[counter] == "("):
             counter,newNodeName,globalCounter = buildTable(counter+1,globalCounter,regex)
             if(len(regexNodes)):
@@ -117,12 +118,12 @@ def buildTable(counter,globalCounter,regex):
                 regexNodes.append('Node'+str(globalCounter)+"$")
                 globalCounter += 1
             else:
-                return len(regex),"None",-5
+                return len(regex),"None",-5,table1
         elif(regex[counter] == "+" or regex[counter] == "|"):
             if(len(regexNodes) > 0):
                 regexSplit = "+"
             else:
-                return len(regex),"None",-5
+                return len(regex),"None",-5,table1
         elif(len(regexNodes)):
             print("".join(regexNodes)+regexSplit+regex[counter])
             dic = makeRegexDic("".join(regexNodes)+regexSplit+regex[counter])
@@ -141,7 +142,7 @@ def buildTable(counter,globalCounter,regex):
         table1['Node'+str(globalCounter)+"$"] = dic
         globalCounter += 1
     print("returning",regexNodes)
-    return counter,regexNodes[0],globalCounter
+    return counter,regexNodes[0],globalCounter,table1
 
 regex = "(1+0)*1"
 regex = "(a|b)*abb"
@@ -150,7 +151,7 @@ isValidInput(regex)
 
 regex = "(1(1+0)00)|1"
 print(checkParantheses(0,0,regex))
-ret1,ret2,flag = buildTable(0,0,regex)
+ret1,ret2,flag,table1 = buildTable(0,0,regex)
 print(flag)
 print("printing the table")
 print(table1)
