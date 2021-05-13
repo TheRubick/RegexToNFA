@@ -17,7 +17,7 @@ def checkParantheses(counterCheck,counter,regex):
         counterCheck += 1
     if(regex[counter] == ")"):
         counterCheck -= 1
-    if(counterCheck < 0):
+    if(counterCheck < 0): # if there is a preceding ) then return
         return -1
     return checkParantheses(counterCheck,counter+1,regex)
 
@@ -25,27 +25,31 @@ def checkParantheses(counterCheck,counter,regex):
 def isValidInput(regex):
     SpecialChars = []
     for i in regex:
-        '''
-        n-make sure en el mawdo3 kolo mortbet bel validation msh b2ny abdel el invalid char
-        n3ml check 3la 7etet el numbers hal hya valid wala la2
-        @TODO yryt nkml ba2yt el validation cases zay maslan el *A,**,*|*,() order and position,etc..
-        '''
         if(
-            ((ord(i) >= 97 and ord(i) <= 122) or (ord(i) >= 65 and ord(i) <= 90)) or
-            i in ['+','|','*','(',')'] or (ord(i) >= 48 and ord(i) <= 57)
+            ((ord(i) >= 97 and ord(i) <= 122) or (ord(i) >= 65 and ord(i) <= 90))
+            or (ord(i) >= 48 and ord(i) <= 57)
         ):
             SpecialChars.append(i)
-        else:
+        elif(i not in ['+','|','*','(',')']): # if the regex has character other than the valid ones
             print("invalid character !!",i)
             return None
-        print(ord(i))
-    if(re.findall("\*{2,}",regex) or re.findall("\|{2,}",regex) 
-        or re.findall("\|\*+",regex)):
+        #print(ord(i))
+    if(
+        re.findall("\*{2,}",regex) or re.findall("\|{2,}",regex) # ** , ||
+        or re.findall("\+{2,}",regex) or re.findall("\|\*+",regex) # ++ , |*
+        or re.findall("\(\*",regex) or re.findall("\(\|",regex) # (* , (|
+        or re.findall("\(\+",regex) or re.findall("\|\)",regex) # (+ , |)
+        or re.findall("\+\)",regex) or re.findall("\+\*",regex) # +) , +*
+        or re.findall("^\*",regex) or re.findall("^\+",regex) # start with * or +
+        or re.findall("^\|",regex) or re.findall("\|$",regex) # start with | or end with |
+        or re.findall("\+$",regex) # end with +
+        ): 
             print("invalid sequence")
             return None
     if(checkParantheses(0,0,regex) == 0):
         return SpecialChars
     else:
+        print("invalid parantheses sequence")
         return None
 
 def makeRegexDic(regex):
@@ -111,21 +115,15 @@ def buildTable(counter,globalCounter,regex):
             else:
                 regexNodes.append(newNodeName+"$")
         elif(regex[counter] == "*"):
-            if(len(regexNodes) > 0):
-                dic = makeRegexDic("".join(regexNodes)+"*")
-                table1['Node'+str(globalCounter)] = dic
-                #print(regexNodes)
-                print('Node'+str(globalCounter-1)+"$")
-                regexNodes = []
-                regexNodes.append('Node'+str(globalCounter)+"$")
-                globalCounter += 1
-            else:
-                return len(regex),"None",-5,table1
+            dic = makeRegexDic("".join(regexNodes)+"*")
+            table1['Node'+str(globalCounter)] = dic
+            #print(regexNodes)
+            print('Node'+str(globalCounter-1)+"$")
+            regexNodes = []
+            regexNodes.append('Node'+str(globalCounter)+"$")
+            globalCounter += 1
         elif(regex[counter] == "+" or regex[counter] == "|"):
-            if(len(regexNodes) > 0):
-                regexSplit = "+"
-            else:
-                return len(regex),"None",-5,table1
+            regexSplit = "+"
         elif(len(regexNodes)):
             #print("".join(regexNodes)+regexSplit+regex[counter])
             dic = makeRegexDic("".join(regexNodes)+regexSplit+regex[counter])
@@ -148,9 +146,11 @@ def buildTable(counter,globalCounter,regex):
 
 regex = "(1+0)*1"
 regex = "(a|b)*abb"
-regex = "0+(1((0+1)*)00)"
-isValidInput(regex)
-
+regex = "0+*(1((0+1)*)00)"
+regex = "*(1+0)*1"
+specialChars = isValidInput(regex)
+print(specialChars)
+'''
 #regex = "(1)*"
 print(checkParantheses(0,0,regex))
 ret1,ret2,flag,table1 = buildTable(0,0,regex)
@@ -159,3 +159,4 @@ print("printing the table")
 print(len(table1))
 
 #print(makeRegexDic("1$|Node1$"))
+'''

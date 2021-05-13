@@ -56,7 +56,7 @@ table3 = {
         'F':{'operation':2,'oprd1':'B' }
         }
 originalChars3 = ['0','1']
-regex = "0|(1(0+1)*00)"
+regex = "(a|b)*abb"#"0|(1(0+1)*00)"
 #check the validity of the input and return its specialchars if it valid , none otherwise
 originalChars = isValidInput(regex)
 if(originalChars is not None):
