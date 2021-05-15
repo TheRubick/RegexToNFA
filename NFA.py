@@ -246,8 +246,8 @@ originalChars2 = ['a','b']
 
 
 
-graph = createNFA(table2,originalChars2,'Z')
-printNFAgraph(graph)
+#graph = createNFA(table2,originalChars2,'Z')
+#printNFAgraph(graph)
 
 def OutputGraph(graph, alphabet):
     print("/////////////////////////")
