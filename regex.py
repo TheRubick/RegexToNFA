@@ -5,10 +5,10 @@
 #(D+E)
 #Z
 import re
-table = {'Z':{"operation":1,'oprd1':'D', 'oprd2':'E' },
-        'D':{'operation':2,'oprd1':'C', 'oprd2':-1 },
-        'C':{'operation':1,'oprd1':'0', 'oprd2':'1' },
-        'E':{'operation':0,'oprd1':'0', 'oprd2':'1' }}
+#table = {'Z':{"operation":1,'oprd1':'D', 'oprd2':'E' },
+       # 'D':{'operation':2,'oprd1':'C', 'oprd2':-1 },
+      # 'C':{'operation':1,'oprd1':'0', 'oprd2':'1' },
+      #  'E':{'operation':0,'oprd1':'0', 'oprd2':'1' }}
 
 def checkParantheses(counterCheck,counter,regex):
     if(counter == len(regex)):
@@ -104,7 +104,9 @@ def buildTable(counter,globalCounter,regex):
                 globalCounter += 1
             return counter,'Node'+str(globalCounter-1),globalCounter,table1
         elif(regex[counter] == "("):
-            counter,newNodeName,globalCounter,table1 = buildTable(counter+1,globalCounter,regex)
+            counter,newNodeName,globalCounter,tableTemp = buildTable(counter+1,globalCounter,regex)
+            tableTemp2 = table1
+            table1 = {**tableTemp2 , **tableTemp}
             if(len(regexNodes)):
                 #print("".join(regexNodes)+regexSplit+newNodeName)
                 dic = makeRegexDic("".join(regexNodes)+regexSplit+newNodeName)
@@ -144,13 +146,18 @@ def buildTable(counter,globalCounter,regex):
     #print("returning",regexNodes)
     return counter,regexNodes[0],globalCounter,table1
 
+
+'''
+x,y,z,table = buildTable(0,0,"(a|b)*1(f|g)")
+print("printing table",table)
+
 regex = "(1+0)*1"
 regex = "(a|b)*abb"
 regex = "0+*(1((0+1)*)00)"
-regex = "*(1+0)*1"
-specialChars = isValidInput(regex)
+regex = "(a|b)*1(a|b)*4(cdef)"
+specialChars = isValidInput("**")
 print(specialChars)
-'''
+
 #regex = "(1)*"
 print(checkParantheses(0,0,regex))
 ret1,ret2,flag,table1 = buildTable(0,0,regex)

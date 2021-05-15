@@ -47,6 +47,12 @@ originalChars2 = ['a','b']
 #0+D0
 #0+E
 #Z
+#(1+0)*1
+#(a|b)*abb
+#0+*(1((0+1)*)00) - wrong test case as there is invalid sequence
+#(a|b)*1(a|b)*4(cdef)
+#(1((0+1)*1+1*+9)00)
+
 table3 = {
         'Z':{"operation":1,'oprd1':'0', 'oprd2':'E' },
         'E':{'operation':0,'oprd1':'D', 'oprd2':'0' },
@@ -57,7 +63,7 @@ table3 = {
         }
 originalChars3 = ['0','1']
 #regex = "(a|b)*abb"#"0|(1(0+1)*00)"
-regex = "(a|b)*1(a|b)*4(cdef)"
+regex = "(1(((0+1)*1+1)*+9)00)"
 #check the validity of the input and return its specialchars if it valid , none otherwise
 originalChars = isValidInput(regex)
 if(originalChars is not None):
