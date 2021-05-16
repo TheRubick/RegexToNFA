@@ -63,7 +63,7 @@ table3 = {
         }
 originalChars3 = ['0','1']
 #regex = "(a|b)*abb"#"0|(1(0+1)*00)"
-regex = "(1(((0+1)*1+1)*+9)00)"
+regex = "(a|b)*1(a|b)*4(cdef)"
 #check the validity of the input and return its specialchars if it valid , none otherwise
 originalChars = isValidInput(regex)
 if(originalChars is not None):

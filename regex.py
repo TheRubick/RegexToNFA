@@ -107,13 +107,21 @@ def buildTable(counter,globalCounter,regex):
             counter,newNodeName,globalCounter,tableTemp = buildTable(counter+1,globalCounter,regex)
             tableTemp2 = table1
             table1 = {**tableTemp2 , **tableTemp}
-            if(len(regexNodes)):
-                #print("".join(regexNodes)+regexSplit+newNodeName)
-                dic = makeRegexDic("".join(regexNodes)+regexSplit+newNodeName)
+            if(counter < len(regex) - 1 and regex[counter+1] == "*"):
+                print("Node Name",newNodeName)
+                dic = makeRegexDic(newNodeName+"$"+"*")
                 table1['Node'+str(globalCounter)] = dic
-                regexNodes = ['Node'+str(globalCounter)+"$"]
+                #print(regexNodes)
+                regexNodes.append('Node'+str(globalCounter)+"$")
                 globalCounter += 1
-                regexSplit = ""
+                counter += 1
+                if(len(regexNodes) == 2):
+                    dic = makeRegexDic(regexNodes[0]+regexSplit+regexNodes[1])
+                    table1['Node'+str(globalCounter)] = dic
+                    regexNodes = ['Node'+str(globalCounter)+"$"]
+                    globalCounter += 1
+                    regexSplit = ""
+
             else:
                 regexNodes.append(newNodeName+"$")
         elif(regex[counter] == "*"):
@@ -141,14 +149,16 @@ def buildTable(counter,globalCounter,regex):
         finalRegex = "".join(regexNodes) + regexSplit
         #print(finalRegex)
         dic = makeRegexDic(finalRegex)
-        table1['Node'+str(globalCounter)+"$"] = dic
+        table1['Node'+str(globalCounter)] = dic
         globalCounter += 1
     #print("returning",regexNodes)
     return counter,regexNodes[0],globalCounter,table1
 
-
 '''
-x,y,z,table = buildTable(0,0,"(a|b)*1(f|g)")
+regex = "(a|b)*1(a|b)*4(cdef)"
+x,y,z,table = buildTable(0,0,regex)
+print(table)
+
 print("printing table",table)
 
 regex = "(1+0)*1"
