@@ -84,81 +84,65 @@ def makeRegexDic(regex):
         dicRegex['oprd2'] = dicRegex['oprd2'][:-1] if "$" in dicRegex['oprd2'] else dicRegex['oprd2'] 
     return dicRegex
 
-
 def buildTable(counter,globalCounter,regex):
     table1 = {}
     dic = {}
     regexNodes = []
     regexSplit = ""
     while(counter < len(regex)):
-        #print(counter,' ',len(regex))
         if(regex[counter] == ")"):
-            if(len(regexNodes) > 1):
-                finalRegex = "".join(regexNodes[0]) + regexSplit + "".join(regexNodes[1])
-                #print(finalRegex)
-                dic = makeRegexDic(finalRegex)
-                table1['Node'+str(globalCounter)] = dic
-            #print("global = ",globalCounter)
-                globalCounter += 1
-            if(regexNodes[0][:2] != "No"):
-                globalCounter += 1
+            #if the returned node is special character
+            if(len(regexNodes) == 1 and len(regexNodes[0]) == 2):
+                return counter,regexNodes[0],globalCounter,table1
             return counter,'Node'+str(globalCounter-1),globalCounter,table1
         elif(regex[counter] == "("):
             counter,newNodeName,globalCounter,tableTemp = buildTable(counter+1,globalCounter,regex)
             tableTemp2 = table1
             table1 = {**tableTemp2 , **tableTemp}
-            if(counter < len(regex) - 1 and regex[counter+1] == "*"):
-                print("Node Name",newNodeName)
-                dic = makeRegexDic(newNodeName+"$"+"*")
+            #check if the returned node is followed by asterics *
+            if(counter + 1 < len(regex) and regex[counter+1] == "*"):
+                #check if the newNode is special character or not
+                newNodeName = newNodeName if len(newNodeName) == 2 else (newNodeName + "$")
+                dic = makeRegexDic(newNodeName+"*")
                 table1['Node'+str(globalCounter)] = dic
-                #print(regexNodes)
                 regexNodes.append('Node'+str(globalCounter)+"$")
                 globalCounter += 1
                 counter += 1
-                if(len(regexNodes) == 2):
-                    dic = makeRegexDic(regexNodes[0]+regexSplit+regexNodes[1])
-                    table1['Node'+str(globalCounter)] = dic
-                    regexNodes = ['Node'+str(globalCounter)+"$"]
-                    globalCounter += 1
-                    regexSplit = ""
-
             else:
-                regexNodes.append(newNodeName+"$")
-        elif(regex[counter] == "*"):
-            dic = makeRegexDic("".join(regexNodes)+"*")
+                regexNodes.append(newNodeName) # here because the newNodeName is followed by $
+        elif(regex[counter] == "+" or regex[counter] == "|"):
+            regexSplit = "+"
+        else:
+            coreNode = regex[counter]+"$"
+            regexNodes.append(coreNode)
+            #check if the current node followed by asterics *
+            if(counter+1 < len(regex) and regex[counter+1] == "*"):
+                counter += 1
+                dic = makeRegexDic(coreNode+"*")
+                table1['Node'+str(globalCounter)] = dic
+                regexNodes.remove(coreNode)
+                regexNodes.append('Node'+str(globalCounter)+"$")
+                globalCounter += 1
+
+        #check if there is two nodes in the current state which should be merged
+        if(len(regexNodes) == 2):
+            regexNodesSplitted = regexNodes[0] + regexSplit + regexNodes[1]
+            dic = makeRegexDic(regexNodesSplitted)
             table1['Node'+str(globalCounter)] = dic
-            #print(regexNodes)
-            print('Node'+str(globalCounter-1)+"$")
             regexNodes = []
             regexNodes.append('Node'+str(globalCounter)+"$")
             globalCounter += 1
-        elif(regex[counter] == "+" or regex[counter] == "|"):
-            regexSplit = "+"
-        elif(len(regexNodes)):
-            #print("".join(regexNodes)+regexSplit+regex[counter])
-            dic = makeRegexDic("".join(regexNodes)+regexSplit+regex[counter])
-            table1['Node'+str(globalCounter)] = dic
-            regexNodes = ['Node'+str(globalCounter)+"$"]
-            globalCounter += 1
             regexSplit = ""
-        else:
-            regexNodes.append(regex[counter]+"$")
 
         counter += 1
-    if(len(regexNodes) > 1):
-        finalRegex = "".join(regexNodes) + regexSplit
-        #print(finalRegex)
-        dic = makeRegexDic(finalRegex)
-        table1['Node'+str(globalCounter)] = dic
-        globalCounter += 1
-    #print("returning",regexNodes)
     return counter,regexNodes[0],globalCounter,table1
 
-'''
-regex = "(a|b)*1(a|b)*4(cdef)"
-x,y,z,table = buildTable(0,0,regex)
-print(table)
 
+regex = ["0*","(0)*","A","01|23","(A)*+B","A*B*A+B","A*+B*","(a|b)*1","(ab)+(1(5+p)*5)",
+"(((a+h)*9*9*+8)*3*+33)","0+(1((0+1)*)00)","(a|b)*1(a|b)*4(cdef)"]
+x,y,z,table = buildTable(0,0,regex[3])
+print(table)
+'''
 print("printing table",table)
 
 regex = "(1+0)*1"
